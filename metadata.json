@@ -1,0 +1,8 @@
+{
+  "name": "Remix Remix 生活随记更新版1 - Life Log",
+  "description": "一站式个人生活记录应用，融合代办事项、情绪日记与收支记账，支持AI智能整理与生活数据统计。",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

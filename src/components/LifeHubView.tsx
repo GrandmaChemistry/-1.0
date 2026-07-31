@@ -175,10 +175,10 @@ export const LifeHubView: React.FC<LifeHubViewProps> = ({
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
       {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-[#FAF9F6] border border-[#1C1C1C]/10 p-5 sm:p-8 shadow-xs">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-[#F2F0EB] border border-[#1C1C1C]/10 p-5 sm:p-8 shadow-xs">
         <div className="space-y-2 max-w-xl">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#F2F0EB] border border-[#1C1C1C]/10 text-[#3B6E58] text-[10px] uppercase tracking-[0.2em] font-semibold">
-            <Sparkles className="w-3 h-3 text-[#3B6E58]" />
+          <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] font-bold text-[#8C8476] mb-1">
+            <Sparkles className="w-3.5 h-3.5 text-[#3B6E58]" />
             <span>Habits, Wishes & Moments</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-serif-title italic font-bold text-[#1C1C1C]">

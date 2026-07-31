@@ -4,23 +4,17 @@ import { APP_IMAGES } from '../data/assets';
 import {
   X,
   User,
-  BookOpen,
-  CheckSquare,
-  Wallet,
-  Sparkles,
   Edit3,
   Check,
   Calendar,
   Heart,
-  Copy,
   Moon,
   Book,
   CreditCard,
   Smile,
-  Camera,
   Upload,
-  Trophy,
   SmilePlus,
+  Settings,
 } from 'lucide-react';
 
 interface UserProfileModalProps {
@@ -31,6 +25,7 @@ interface UserProfileModalProps {
   tasks: Task[];
   diary: DiaryEntry[];
   transactions: Transaction[];
+  onOpenSettings?: () => void;
 }
 
 // Cute Pet Preset Avatars (Cats, Dogs & Cute Animals)
@@ -85,10 +80,10 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   tasks,
   diary,
   transactions,
+  onOpenSettings,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<UserProfile>(profile);
-  const [copiedMessage, setCopiedMessage] = useState(false);
   const [customAvatarUrl, setCustomAvatarUrl] = useState('');
 
   if (!isOpen) return null;
@@ -106,33 +101,6 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   // Total word count estimation
   const totalWords = diary.reduce((acc, curr) => acc + (curr.content ? curr.content.length : 0), 0);
 
-  // Level & XP calculation
-  const totalXp = diaryCount * 15 + completedTasksCount * 10 + txCount * 5 + daysActive * 2;
-
-  let levelName = 'LV.1 秩序新萌';
-  let nextLevelXp = 50;
-  let levelColor = 'text-amber-700 bg-amber-100 border-amber-300';
-
-  if (totalXp >= 600) {
-    levelName = 'LV.5 秩序生活大师';
-    nextLevelXp = 1000;
-    levelColor = 'text-purple-800 bg-purple-100 border-purple-300';
-  } else if (totalXp >= 300) {
-    levelName = 'LV.4 岁月藏书家';
-    nextLevelXp = 600;
-    levelColor = 'text-indigo-800 bg-indigo-100 border-indigo-300';
-  } else if (totalXp >= 150) {
-    levelName = 'LV.3 笃行生活家';
-    nextLevelXp = 300;
-    levelColor = 'text-emerald-800 bg-emerald-100 border-emerald-300';
-  } else if (totalXp >= 50) {
-    levelName = 'LV.2 雅致记录者';
-    nextLevelXp = 150;
-    levelColor = 'text-sky-800 bg-sky-100 border-sky-300';
-  }
-
-  const progressPercent = Math.min(100, Math.round((totalXp / nextLevelXp) * 100));
-
   const handleStartEdit = () => {
     setFormData(profile);
     setIsEditing(true);
@@ -142,13 +110,6 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
     e.preventDefault();
     onUpdateProfile(formData);
     setIsEditing(false);
-  };
-
-  const handleCopyCard = () => {
-    const cardText = `【Life Ledger 个人名片】\n👤 ${profile.name} (${profile.title})\n💬 "${profile.motto}"\n🏆 当前等级: ${levelName} (${totalXp} XP)\n📖 日记 ${diaryCount} 篇 | 🎯 待办完成 ${completedTasksCount} 项 | ☕ 同行 ${daysActive} 天`;
-    navigator.clipboard.writeText(cardText);
-    setCopiedMessage(true);
-    setTimeout(() => setCopiedMessage(false), 2000);
   };
 
   const handleSelectPresetAvatar = (url: string) => {
@@ -210,8 +171,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               <div>
                 <div className="flex items-center gap-2">
                   <h4 className="text-lg font-bold text-[#1C1C1C]">{profile.name}</h4>
-                  <span className={`px-2 py-0.5 border text-[10px] font-bold uppercase tracking-wider ${levelColor}`}>
-                    {levelName}
+                  <span className="px-2 py-0.5 border text-[10px] font-bold uppercase tracking-wider text-[#3B6E58] bg-[#FAF9F6] border-[#3B6E58]/30">
+                    {profile.title}
                   </span>
                 </div>
                 <div className="text-xs text-[#8C8476] space-y-0.5 mt-1">
@@ -238,16 +199,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 
           {/* Motto Box (View Mode) */}
           {!isEditing && (
-            <div className="bg-[#FAF9F6] p-3 border border-[#1C1C1C]/10 text-xs italic font-serif-title text-[#4A4540] flex items-start justify-between gap-2">
+            <div className="bg-[#FAF9F6] p-3 border border-[#1C1C1C]/10 text-xs italic font-serif-title text-[#4A4540]">
               <p>“{profile.motto}”</p>
-              <button
-                onClick={handleCopyCard}
-                className="text-[10px] text-[#8C8476] hover:text-[#1C1C1C] flex items-center gap-1 shrink-0 not-italic font-sans"
-                title="复制个人名片"
-              >
-                <Copy className="w-3 h-3" />
-                <span>{copiedMessage ? '已复制' : '复制名片'}</span>
-              </button>
             </div>
           )}
 
@@ -405,28 +358,29 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
           )}
         </div>
 
-        {/* Level Growth Bar Section */}
-        <div className="bg-[#F2F0EB] p-4 border border-[#1C1C1C]/15 space-y-2">
-          <div className="flex items-center justify-between text-xs font-bold text-[#1C1C1C]">
-            <div className="flex items-center gap-1.5">
-              <Trophy className="w-4 h-4 text-amber-600" />
-              <span>生活家经验成长值 ({totalXp} XP)</span>
+        {/* System Settings Entry in Personal Center */}
+        {onOpenSettings && (
+          <div className="bg-[#F2F0EB] p-4 border border-[#1C1C1C]/15 flex items-center justify-between gap-3 shadow-xs">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 bg-[#FAF9F6] border border-[#1C1C1C]/10 text-[#1C1C1C]">
+                <Settings className="w-4 h-4 text-[#3B6E58]" />
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-[#1C1C1C]">系统设置与数据备份</h4>
+                <p className="text-[10px] text-[#8C8476]">管理预算、数据导出恢复与偏好设置</p>
+              </div>
             </div>
-            <span className="font-mono text-amber-700">{progressPercent}% / 升级进度</span>
+            <button
+              onClick={() => {
+                onClose();
+                onOpenSettings();
+              }}
+              className="px-3 py-1.5 bg-[#1C1C1C] hover:bg-[#3D3A37] text-white text-xs font-bold transition-colors shrink-0 flex items-center gap-1"
+            >
+              <span>前往设置</span>
+            </button>
           </div>
-
-          <div className="w-full h-2.5 bg-[#E8E5DF] overflow-hidden border border-[#1C1C1C]/10 p-0.5">
-            <div
-              className="h-full bg-gradient-to-r from-amber-500 to-emerald-600 transition-all duration-500"
-              style={{ width: `${progressPercent}%` }}
-            ></div>
-          </div>
-
-          <p className="text-[10px] text-[#8C8476] flex items-center justify-between">
-            <span>习惯、日记与收支打卡均可积累 XP 经验</span>
-            <span>距离下一等级还需 {Math.max(0, nextLevelXp - totalXp)} XP</span>
-          </p>
-        </div>
+        )}
 
         {/* Life Habits & Preferences */}
         <div className="space-y-3">
@@ -483,3 +437,4 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
     </div>
   );
 };
+

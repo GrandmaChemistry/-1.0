@@ -9,7 +9,7 @@ import {
   Sparkles,
   PlusCircle,
   Settings,
-  Feather,
+  User,
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -44,10 +44,10 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="sticky top-0 z-30 bg-[#FAF9F6]/95 backdrop-blur-md border-b border-[#1C1C1C]/10 text-[#1C1C1C]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-4">
+        <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
           {/* Logo & Branding */}
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 overflow-hidden shadow-xs border border-[#1C1C1C]/10 bg-[#FAF9F6] shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 overflow-hidden shadow-xs border border-[#1C1C1C]/10 bg-[#FAF9F6] shrink-0">
               <img
                 src={APP_IMAGES.appLogo}
                 alt="生活随记 Logo"
@@ -56,15 +56,15 @@ export const Header: React.FC<HeaderProps> = ({
               />
             </div>
             <div>
-              <div className="flex items-baseline gap-2">
-                <h1 className="text-xl font-serif-title italic font-bold tracking-tight text-[#1C1C1C]">
+              <div className="flex items-baseline gap-1.5 sm:gap-2">
+                <h1 className="text-lg sm:text-xl font-serif-title italic font-bold tracking-tight text-[#1C1C1C]">
                   生活随记
                 </h1>
-                <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-[#8C8476]">
+                <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-bold text-[#8C8476] hidden md:inline">
                   The Life Ledger
                 </span>
               </div>
-              <p className="text-[11px] text-[#8C8476] hidden sm:block font-light">
+              <p className="text-[11px] text-[#8C8476] hidden lg:block font-light">
                 Quiet Reflections • Priority Tasks • Daily Ledger
               </p>
             </div>
@@ -93,8 +93,8 @@ export const Header: React.FC<HeaderProps> = ({
           </nav>
 
           {/* Search & Actions */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="relative hidden lg:block w-44">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="relative hidden lg:block w-40">
               <input
                 type="text"
                 placeholder="搜索全书..."
@@ -106,37 +106,43 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               onClick={onOpenQuickRecord}
-              className="flex items-center gap-1.5 px-3 sm:px-4 py-2 bg-[#3B6E58] hover:bg-[#2E5846] text-white text-[10px] uppercase tracking-[0.15em] sm:tracking-[0.2em] font-bold transition-colors min-h-[38px] shadow-xs"
+              className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 bg-[#3B6E58] hover:bg-[#2E5846] text-white text-[10px] uppercase tracking-wider font-bold transition-colors min-h-[34px] shadow-xs shrink-0"
+              title="快速记录"
             >
               <PlusCircle className="w-3.5 h-3.5 shrink-0" />
-              <span className="hidden sm:inline">快速记录</span>
-              <span className="sm:hidden">速记</span>
+              <span>速记</span>
             </button>
 
+            {/* Explicit Settings Button */}
             <button
               onClick={onOpenSettings}
               title="设置与数据备份"
-              className="p-2 text-[#4A4540] hover:text-[#1C1C1C] bg-[#F2F0EB] hover:bg-[#FAF9F6] border border-[#1C1C1C]/10 transition-colors min-w-[38px] min-h-[38px] flex items-center justify-center"
+              className="flex items-center gap-1 px-2 py-1.5 text-[#1C1C1C] bg-[#F2F0EB] hover:bg-[#FAF9F6] border border-[#1C1C1C]/10 transition-colors min-h-[34px] shrink-0 text-xs font-medium"
             >
-              <Settings className="w-4 h-4" />
+              <Settings className="w-3.5 h-3.5 text-[#4A4540]" />
+              <span className="text-[11px] font-semibold">设置</span>
             </button>
 
-            {/* Cute Profile Avatar */}
-            <div className="relative group cursor-pointer" onClick={onOpenUserProfile} title="个人中心 (Personal Center)">
+            {/* Explicit Personal Center / User Profile Button */}
+            <button
+              onClick={onOpenUserProfile}
+              title="个人中心"
+              className="flex items-center gap-1.5 px-2 py-1 bg-[#F2F0EB] hover:bg-[#FAF9F6] border border-[#1C1C1C]/10 transition-colors min-h-[34px] shrink-0 group cursor-pointer"
+            >
               <img
                 src={profile?.avatarUrl || APP_IMAGES.userAvatar}
                 alt="User Avatar"
                 referrerPolicy="no-referrer"
-                className="w-9 h-9 rounded-full object-cover border-2 border-[#1C1C1C]/20 group-hover:border-[#1C1C1C] transition-colors shadow-xs"
+                className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover border border-[#1C1C1C]/20 group-hover:border-[#1C1C1C] transition-colors"
               />
-              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-[#FAF9F6]"></span>
-            </div>
+              <span className="text-[11px] font-semibold text-[#1C1C1C]">我的</span>
+            </button>
           </div>
         </div>
       </div>
 
       {/* Mobile App Fixed Bottom Navigation Bar */}
-      <nav aria-label="Mobile navigation" className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FAF9F6]/95 backdrop-blur-lg border-t border-[#1C1C1C]/15 px-2 py-1.5 flex items-center justify-around shadow-lg">
+      <nav aria-label="Mobile navigation" className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FAF9F6]/95 backdrop-blur-lg border-t border-[#1C1C1C]/15 px-1 py-1.5 flex items-center justify-around shadow-lg">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -144,19 +150,30 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 flex flex-col items-center justify-center py-1 gap-1 text-[10px] font-medium transition-all ${
+              className={`flex-1 flex flex-col items-center justify-center py-0.5 gap-0.5 text-[10px] font-medium transition-all ${
                 isActive
                   ? 'text-[#3B6E58] font-bold'
                   : 'text-[#8C8476] hover:text-[#3B6E58]'
               }`}
             >
               <div className={`p-1 transition-transform ${isActive ? 'bg-[#3B6E58] text-white rounded-xs' : ''}`}>
-                <Icon className="w-4 h-4" />
+                <Icon className="w-3.5 h-3.5" />
               </div>
-              <span className="leading-none">{tab.label}</span>
+              <span className="leading-none text-[9px]">{tab.label}</span>
             </button>
           );
         })}
+
+        {/* Mobile Bottom Navigation: 个人中心 (我的) */}
+        <button
+          onClick={onOpenUserProfile}
+          className="flex-1 flex flex-col items-center justify-center py-0.5 gap-0.5 text-[10px] font-medium text-[#8C8476] hover:text-[#3B6E58] transition-all"
+        >
+          <div className="p-1">
+            <User className="w-3.5 h-3.5 text-[#3B6E58]" />
+          </div>
+          <span className="leading-none text-[9px]">我的</span>
+        </button>
       </nav>
     </header>
   );

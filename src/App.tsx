@@ -276,6 +276,7 @@ export default function App() {
         tasks={tasks}
         diary={diary}
         transactions={transactions}
+        onOpenSettings={() => setIsSettingsOpen(true)}
       />
     </div>
   );

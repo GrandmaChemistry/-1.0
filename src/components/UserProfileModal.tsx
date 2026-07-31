@@ -169,13 +169,15 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               </div>
 
               <div>
-                <div className="flex items-center gap-2">
-                  <h4 className="text-lg font-bold text-[#1C1C1C]">{profile.name}</h4>
-                  <span className="px-2 py-0.5 border text-[10px] font-bold uppercase tracking-wider text-[#3B6E58] bg-[#FAF9F6] border-[#3B6E58]/30">
-                    {profile.title}
-                  </span>
+                <div className="space-y-1">
+                  <h4 className="text-lg font-bold text-[#1C1C1C] leading-tight">{profile.name}</h4>
+                  <div>
+                    <span className="inline-block px-2 py-0.5 border text-[10px] font-bold uppercase tracking-wider text-[#3B6E58] bg-[#FAF9F6] border-[#3B6E58]/30">
+                      {profile.title}
+                    </span>
+                  </div>
                 </div>
-                <div className="text-xs text-[#8C8476] space-y-0.5 mt-1">
+                <div className="text-xs text-[#8C8476] space-y-0.5 mt-2">
                   <p className="flex items-center gap-1">
                     <Calendar className="w-3 h-3 text-[#8C8476]" />
                     <span>记录始于 {profile.joinDate}</span>

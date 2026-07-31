@@ -203,8 +203,8 @@ export const LifeHubView: React.FC<LifeHubViewProps> = ({
             onClick={() => setActiveSubTab('habits')}
             className={`flex items-center gap-2 px-4 py-2 text-xs font-medium transition-colors ${
               activeSubTab === 'habits'
-                ? 'bg-[#1C1C1C] text-[#FAF9F6]'
-                : 'bg-[#FDFCFB] text-[#4A4540] hover:text-[#1C1C1C] border border-[#1C1C1C]/10'
+                ? 'bg-[#3B6E58] text-white shadow-xs font-semibold'
+                : 'bg-[#F2F0EB] text-[#4A4540] hover:text-[#3B6E58] border border-[#1C1C1C]/10'
             }`}
           >
             <Flame className="w-3.5 h-3.5 text-amber-400" />
@@ -215,8 +215,8 @@ export const LifeHubView: React.FC<LifeHubViewProps> = ({
             onClick={() => setActiveSubTab('wishes')}
             className={`flex items-center gap-2 px-4 py-2 text-xs font-medium transition-colors ${
               activeSubTab === 'wishes'
-                ? 'bg-[#1C1C1C] text-[#FAF9F6]'
-                : 'bg-[#FDFCFB] text-[#4A4540] hover:text-[#1C1C1C] border border-[#1C1C1C]/10'
+                ? 'bg-[#3B6E58] text-white shadow-xs font-semibold'
+                : 'bg-[#F2F0EB] text-[#4A4540] hover:text-[#3B6E58] border border-[#1C1C1C]/10'
             }`}
           >
             <Compass className="w-3.5 h-3.5 text-sky-400" />
@@ -227,8 +227,8 @@ export const LifeHubView: React.FC<LifeHubViewProps> = ({
             onClick={() => setActiveSubTab('capsule')}
             className={`flex items-center gap-2 px-4 py-2 text-xs font-medium transition-colors ${
               activeSubTab === 'capsule'
-                ? 'bg-[#1C1C1C] text-[#FAF9F6]'
-                : 'bg-[#FDFCFB] text-[#4A4540] hover:text-[#1C1C1C] border border-[#1C1C1C]/10'
+                ? 'bg-[#3B6E58] text-white shadow-xs font-semibold'
+                : 'bg-[#F2F0EB] text-[#4A4540] hover:text-[#3B6E58] border border-[#1C1C1C]/10'
             }`}
           >
             <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
@@ -250,7 +250,7 @@ export const LifeHubView: React.FC<LifeHubViewProps> = ({
             </div>
             <button
               onClick={() => setShowAddHabit(!showAddHabit)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1C1C1C] text-[#FAF9F6] text-xs font-medium hover:bg-[#333333] transition-colors shadow-xs"
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-[#3B6E58] hover:bg-[#2E5846] text-white text-xs font-medium transition-colors shadow-xs"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>新建习惯</span>
@@ -327,7 +327,7 @@ export const LifeHubView: React.FC<LifeHubViewProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#1C1C1C] text-[#FAF9F6] text-xs font-medium hover:bg-[#333333]"
+                  className="px-4 py-1.5 bg-[#3B6E58] hover:bg-[#2E5846] text-white text-xs font-medium"
                 >
                   保存习惯
                 </button>
@@ -421,7 +421,7 @@ export const LifeHubView: React.FC<LifeHubViewProps> = ({
             </div>
             <button
               onClick={() => setShowAddWish(!showAddWish)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1C1C1C] text-[#FAF9F6] text-xs font-medium hover:bg-[#333333] transition-colors shadow-xs"
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-[#3B6E58] hover:bg-[#2E5846] text-white text-xs font-medium transition-colors shadow-xs"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>添加心愿</span>
@@ -436,8 +436,8 @@ export const LifeHubView: React.FC<LifeHubViewProps> = ({
                 onClick={() => setWishCategoryFilter(cat)}
                 className={`px-3 py-1 text-xs transition-colors ${
                   wishCategoryFilter === cat
-                    ? 'bg-[#1C1C1C] text-[#FAF9F6]'
-                    : 'bg-[#FDFCFB] text-[#8C8476] hover:text-[#1C1C1C] border border-[#1C1C1C]/10'
+                    ? 'bg-[#3B6E58] text-white font-medium shadow-xs'
+                    : 'bg-[#F2F0EB] text-[#4A4540] hover:text-[#3B6E58] border border-[#1C1C1C]/10'
                 }`}
               >
                 {cat}
@@ -512,7 +512,7 @@ export const LifeHubView: React.FC<LifeHubViewProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#1C1C1C] text-[#FAF9F6] text-xs font-medium hover:bg-[#333333]"
+                  className="px-4 py-1.5 bg-[#3B6E58] hover:bg-[#2E5846] text-white text-xs font-medium"
                 >
                   添加到愿望清单
                 </button>
@@ -607,7 +607,7 @@ export const LifeHubView: React.FC<LifeHubViewProps> = ({
               </div>
               <button
                 onClick={drawCapsule}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#1C1C1C] text-[#FAF9F6] text-xs font-medium hover:bg-[#333333] transition-colors"
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#3B6E58] hover:bg-[#2E5846] text-white text-xs font-medium transition-colors shadow-xs"
               >
                 <Shuffle className="w-3.5 h-3.5 text-emerald-300" />
                 <span>开启下一粒胶囊</span>
@@ -647,7 +647,7 @@ export const LifeHubView: React.FC<LifeHubViewProps> = ({
               </div>
               <button
                 onClick={() => setShowAddInsp(!showAddInsp)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1C1C1C] text-[#FAF9F6] text-xs font-medium hover:bg-[#333333] transition-colors shadow-xs"
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#3B6E58] hover:bg-[#2E5846] text-white text-xs font-medium transition-colors shadow-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>录入金句</span>
@@ -703,7 +703,7 @@ export const LifeHubView: React.FC<LifeHubViewProps> = ({
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-1.5 bg-[#1C1C1C] text-[#FAF9F6] text-xs font-medium hover:bg-[#333333]"
+                    className="px-4 py-1.5 bg-[#3B6E58] hover:bg-[#2E5846] text-white text-xs font-medium"
                   >
                     保存灵感
                   </button>

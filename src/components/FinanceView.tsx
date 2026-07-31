@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import { Transaction, Budget, TransactionType } from '../types';
-import { AiApiService } from '../services/api';
 import { APP_IMAGES } from '../data/assets';
 import {
   Wallet,
   Plus,
-  Sparkles,
   TrendingDown,
   TrendingUp,
   Search,
   Trash2,
   PieChart as PieChartIcon,
-  Loader2,
   CreditCard,
   Tag,
   AlertCircle,
@@ -63,11 +60,6 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
   const [filterType, setFilterType] = useState<string>('all');
   const [filterCategory, setFilterCategory] = useState<string>('全部');
   const [searchQuery, setSearchQuery] = useState('');
-
-  // AI Smart Parsing Input Box
-  const [aiInputText, setAiInputText] = useState('');
-  const [isAiLoading, setIsAiLoading] = useState(false);
-  const [aiError, setAiError] = useState<string | null>(null);
 
   // Modal State for Manual Add Transaction
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -124,36 +116,6 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
     return matchesType && matchesCategory && matchesSearch;
   });
 
-  const handleAiSmartParse = async () => {
-    if (!aiInputText.trim()) return;
-    setIsAiLoading(true);
-    setAiError(null);
-    try {
-      const items = await AiApiService.parseSmartExpenses(aiInputText);
-      if (items.length === 0) {
-        setAiError('未能解析出有效的收支明细，请尽量描述清楚金额与事由');
-        return;
-      }
-      const todayStr = new Date().toISOString().split('T')[0];
-      items.forEach((item) => {
-        onAddTransaction({
-          type: item.type,
-          amount: item.amount,
-          category: item.category,
-          description: item.description,
-          date: todayStr,
-          paymentMethod: item.paymentMethod,
-          tags: ['AI智能记账'],
-        });
-      });
-      setAiInputText('');
-    } catch (err: any) {
-      setAiError(err.message || '解析失败，请检查网络后重试');
-    } finally {
-      setIsAiLoading(false);
-    }
-  };
-
   const handleSaveTransaction = (e: React.FormEvent) => {
     e.preventDefault();
     if (!txAmount || parseFloat(txAmount) <= 0) return;
@@ -201,7 +163,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
             理财账本
           </h2>
           <p className="text-xs text-[#4A4540] mt-1 font-light leading-relaxed">
-            智能解析日常收支，精准把控月度预算，清晰掌握资金流向。积少成多，享受理智生活。
+            记录日常收支，精准把控月度预算，清晰掌握资金流向。积少成多，享受理智生活。
           </p>
 
           <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-2">
@@ -235,54 +197,6 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
             <p className="text-[11px] font-serif-title italic text-[#1C1C1C]">🐷 细水长流 · 理性从容</p>
           </div>
         </div>
-      </div>
-
-      {/* AI Smart Natural Language Billing Section */}
-      <div className="bg-[#FDFCFB] border border-[#1C1C1C]/10 p-4 sm:p-6 space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[#1C1C1C]" />
-            <h3 className="text-sm font-bold text-[#1C1C1C]">AI 智能自然语言记账</h3>
-          </div>
-          <span className="text-[10px] sm:text-[11px] text-[#8C8476] font-light">
-            示例：“打车32，下午喝咖啡48，微信支付”
-          </span>
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-2">
-          <input
-            type="text"
-            value={aiInputText}
-            onChange={(e) => setAiInputText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                handleAiSmartParse();
-              }
-            }}
-            placeholder="输入如：打车25元，便利店买水6元..."
-            className="flex-1 bg-[#F2F0EB] border border-[#1C1C1C]/10 px-3.5 py-2.5 text-xs text-[#1C1C1C] placeholder-[#8C8476] focus:outline-none focus:border-[#1C1C1C]"
-          />
-          <button
-            onClick={handleAiSmartParse}
-            disabled={isAiLoading || !aiInputText.trim()}
-            className="px-5 py-2.5 bg-[#3B6E58] hover:bg-[#2E5846] text-white text-[10px] uppercase tracking-[0.2em] font-bold disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5 shrink-0 shadow-xs"
-          >
-            {isAiLoading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>解析中...</span>
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4" />
-                <span>智能解析添加</span>
-              </>
-            )}
-          </button>
-        </div>
-
-        {aiError && <p className="text-xs text-rose-600 font-medium">{aiError}</p>}
       </div>
 
       {/* Monthly Financial Overview & Budget Bar */}

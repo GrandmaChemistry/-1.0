@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import { DiaryEntry, MoodType, WeatherType } from '../types';
-import { AiApiService } from '../services/api';
 import { APP_IMAGES } from '../data/assets';
 import {
   BookOpen,
   Plus,
-  Sparkles,
   Search,
   Trash2,
   Calendar,
   MapPin,
   Tag,
-  Loader2,
   Image as ImageIcon,
   Sun,
   Cloud,
@@ -19,6 +16,7 @@ import {
   Snowflake,
   Wind,
   X,
+  Pencil,
 } from 'lucide-react';
 
 interface DiaryViewProps {
@@ -48,6 +46,7 @@ export const DiaryView: React.FC<DiaryViewProps> = ({
 
   // Editor Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingDiaryId, setEditingDiaryId] = useState<string | null>(null);
   const [entryTitle, setEntryTitle] = useState('');
   const [entryContent, setEntryContent] = useState('');
   const [entryMood, setEntryMood] = useState<MoodType>('happy');
@@ -111,58 +110,47 @@ export const DiaryView: React.FC<DiaryViewProps> = ({
     }
   };
 
-  const getMoodBadge = (mood: MoodType) => {
+  const getMoodEmoji = (mood: MoodType) => {
     switch (mood) {
       case 'happy':
-        return { label: '😊 愉悦', bg: 'bg-amber-500/15 text-amber-300 border-amber-500/30' };
+        return '😊';
       case 'calm':
-        return { label: '😌 平静', bg: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' };
+        return '😌';
       case 'excited':
-        return { label: '🤩 兴奋', bg: 'bg-purple-500/15 text-purple-300 border-purple-500/30' };
+        return '🤩';
       case 'thoughtful':
-        return { label: '💭 沉思', bg: 'bg-blue-500/15 text-blue-300 border-blue-500/30' };
+        return '💭';
       case 'sad':
-        return { label: '😢 低落', bg: 'bg-slate-500/15 text-slate-300 border-slate-500/30' };
+        return '😢';
       case 'tired':
-        return { label: '😴 疲惫', bg: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30' };
+        return '😴';
       default:
-        return { label: '✨ 充实', bg: 'bg-amber-500/15 text-amber-300 border-amber-500/30' };
+        return '✨';
     }
   };
 
-  const handleGenerateModalAiReflection = async () => {
-    if (!entryContent.trim()) return;
-    setIsGeneratingAi(true);
-    try {
-      const text = await AiApiService.getDiaryReflection(
-        entryTitle,
-        entryContent,
-        entryMood,
-        entryWeather
-      );
-      setAiReflectionText(text);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsGeneratingAi(false);
-    }
+  const handleOpenCreateModal = () => {
+    setEditingDiaryId(null);
+    setEntryTitle('');
+    setEntryContent('');
+    setEntryMood('happy');
+    setEntryWeather('sunny');
+    setEntryLocation('');
+    setEntryTagsStr('');
+    setEntryPhotos([]);
+    setIsModalOpen(true);
   };
 
-  const handleGenerateEntryAiReflection = async (entry: DiaryEntry) => {
-    setGeneratingForId(entry.id);
-    try {
-      const text = await AiApiService.getDiaryReflection(
-        entry.title,
-        entry.content,
-        entry.mood,
-        entry.weather
-      );
-      onUpdateDiary({ ...entry, aiReflection: text });
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setGeneratingForId(null);
-    }
+  const handleOpenEditModal = (entry: DiaryEntry) => {
+    setEditingDiaryId(entry.id);
+    setEntryTitle(entry.title);
+    setEntryContent(entry.content);
+    setEntryMood(entry.mood);
+    setEntryWeather(entry.weather);
+    setEntryLocation(entry.location || '');
+    setEntryTagsStr(entry.tags ? entry.tags.join(', ') : '');
+    setEntryPhotos(entry.photoUrls || []);
+    setIsModalOpen(true);
   };
 
   const handleSaveDiary = (e: React.FormEvent) => {
@@ -174,30 +162,45 @@ export const DiaryView: React.FC<DiaryViewProps> = ({
       .map((t) => t.trim())
       .filter(Boolean);
 
-    const now = new Date();
-    const dateStr = `${now.toISOString().split('T')[0]} ${String(now.getHours()).padStart(
-      2,
-      '0'
-    )}:${String(now.getMinutes()).padStart(2, '0')}`;
+    if (editingDiaryId) {
+      const existing = diary.find((d) => d.id === editingDiaryId);
+      if (existing) {
+        onUpdateDiary({
+          ...existing,
+          title: entryTitle.trim() || '日常碎碎念',
+          content: entryContent.trim(),
+          mood: entryMood,
+          weather: entryWeather,
+          tags,
+          photoUrls: entryPhotos,
+          location: entryLocation.trim() || undefined,
+        });
+      }
+    } else {
+      const now = new Date();
+      const dateStr = `${now.toISOString().split('T')[0]} ${String(now.getHours()).padStart(
+        2,
+        '0'
+      )}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-    onAddDiary({
-      title: entryTitle.trim() || '日常碎碎念',
-      content: entryContent.trim(),
-      date: dateStr,
-      mood: entryMood,
-      weather: entryWeather,
-      tags,
-      photoUrls: entryPhotos,
-      aiReflection: aiReflectionText || undefined,
-      location: entryLocation.trim() || undefined,
-    });
+      onAddDiary({
+        title: entryTitle.trim() || '日常碎碎念',
+        content: entryContent.trim(),
+        date: dateStr,
+        mood: entryMood,
+        weather: entryWeather,
+        tags,
+        photoUrls: entryPhotos,
+        location: entryLocation.trim() || undefined,
+      });
+    }
 
+    setEditingDiaryId(null);
     setEntryTitle('');
     setEntryContent('');
     setEntryLocation('');
     setEntryTagsStr('');
     setEntryPhotos([]);
-    setAiReflectionText('');
     setIsModalOpen(false);
   };
 
@@ -228,11 +231,11 @@ export const DiaryView: React.FC<DiaryViewProps> = ({
             生活日记馆
           </h2>
           <p className="text-xs text-[#4A4540] mt-1 font-light leading-relaxed">
-            记录情绪轨迹，捕捉生活瞬间，与AI伴侣开启灵感复盘。让文字与温暖定格时光。
+            记录情绪轨迹，捕捉生活瞬间。让文字与温暖定格时光。
           </p>
           <div className="pt-2 flex flex-wrap items-center gap-2">
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={handleOpenCreateModal}
               className="flex items-center gap-2 px-5 py-2.5 bg-[#3B6E58] hover:bg-[#2E5846] text-white text-[10px] uppercase tracking-[0.2em] font-bold transition-colors shadow-xs"
             >
               <Plus className="w-4 h-4 text-emerald-200" />
@@ -294,17 +297,15 @@ export const DiaryView: React.FC<DiaryViewProps> = ({
       ) : (
         <div className="space-y-6">
           {filteredDiary.map((entry) => {
-            const moodBadge = getMoodBadge(entry.mood);
-            const isGenerating = generatingForId === entry.id;
-
             return (
               <article
                 key={entry.id}
                 className="bg-[#FDFCFB] border border-[#1C1C1C]/10 p-6 sm:p-8 hover:border-[#1C1C1C]/30 transition-all space-y-4"
               >
-                {/* Meta Header */}
+                {/* Meta Header - Title, Date & Time on the SAME LINE */}
                 <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#1C1C1C]/10">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <h3 className="text-xl font-serif-title italic font-bold text-[#1C1C1C]">{entry.title}</h3>
                     <div className="flex items-center gap-1.5 text-xs text-[#8C8476] font-mono">
                       <Calendar className="w-3.5 h-3.5 text-[#1C1C1C]" />
                       <span>{entry.date}</span>
@@ -315,8 +316,8 @@ export const DiaryView: React.FC<DiaryViewProps> = ({
                       <span>{getWeatherLabel(entry.weather)}</span>
                     </div>
 
-                    <span className="px-2.5 py-0.5 text-xs font-medium bg-[#FAF9F6] border border-[#1C1C1C]/10 text-[#1C1C1C]">
-                      {moodBadge.label}
+                    <span className="px-2 py-0.5 text-xs font-medium bg-[#FAF9F6] border border-[#1C1C1C]/10 text-[#1C1C1C]" title={`心情: ${entry.mood}`}>
+                      {getMoodEmoji(entry.mood)}
                     </span>
                   </div>
 
@@ -329,9 +330,16 @@ export const DiaryView: React.FC<DiaryViewProps> = ({
                     )}
 
                     <button
+                      onClick={() => handleOpenEditModal(entry)}
+                      title="编辑日记"
+                      className="p-1 text-[#8C8476] hover:text-[#3B6E58] transition-colors"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                    <button
                       onClick={() => onDeleteDiary(entry.id)}
                       title="删除日记"
-                      className="p-1 text-[#8C8476] hover:text-[#1C1C1C] transition-colors"
+                      className="p-1 text-[#8C8476] hover:text-rose-600 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -340,7 +348,6 @@ export const DiaryView: React.FC<DiaryViewProps> = ({
 
                 {/* Content */}
                 <div>
-                  <h3 className="text-xl font-serif-title italic font-bold text-[#1C1C1C] mb-2">{entry.title}</h3>
                   <p className="text-sm text-[#4A4540] leading-relaxed whitespace-pre-wrap font-light">
                     {entry.content}
                   </p>
@@ -379,32 +386,6 @@ export const DiaryView: React.FC<DiaryViewProps> = ({
                     ))}
                   </div>
                 )}
-
-                {/* AI Reflection Box */}
-                {entry.aiReflection ? (
-                  <div className="bg-[#FAF9F6] p-4 border border-[#1C1C1C]/10 text-xs text-[#1C1C1C] leading-relaxed space-y-1">
-                    <div className="flex items-center gap-1.5 font-bold text-[10px] uppercase tracking-wider text-[#8C8476]">
-                      <Sparkles className="w-3.5 h-3.5 text-[#1C1C1C]" />
-                      <span>AI Heart Reflection</span>
-                    </div>
-                    <p className="font-serif-title italic text-sm text-[#1C1C1C]">“{entry.aiReflection}”</p>
-                  </div>
-                ) : (
-                  <div className="pt-2">
-                    <button
-                      onClick={() => handleGenerateEntryAiReflection(entry)}
-                      disabled={isGenerating}
-                      className="px-3 py-1.5 bg-[#1C1C1C] text-white hover:bg-[#3D3A37] text-[10px] uppercase tracking-wider font-bold flex items-center gap-1.5 transition-colors disabled:opacity-50"
-                    >
-                      {isGenerating ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      ) : (
-                        <Sparkles className="w-3.5 h-3.5" />
-                      )}
-                      <span>生成 AI 情绪点评与复盘</span>
-                    </button>
-                  </div>
-                )}
               </article>
             );
           })}
@@ -418,7 +399,9 @@ export const DiaryView: React.FC<DiaryViewProps> = ({
             <div className="flex items-center justify-between pb-3 mb-6 border-b border-[#1C1C1C]/10">
               <div>
                 <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-[#8C8476]">Journal Entry</span>
-                <h3 className="text-xl font-serif-title italic font-bold">撰写新日记</h3>
+                <h3 className="text-xl font-serif-title italic font-bold">
+                  {editingDiaryId ? '编辑日记' : '撰写新日记'}
+                </h3>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -588,30 +571,6 @@ export const DiaryView: React.FC<DiaryViewProps> = ({
                 />
               </div>
 
-              {/* AI Companion Section inside modal */}
-              <div className="p-4 bg-[#F2F0EB] border border-[#1C1C1C]/10 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-[#1C1C1C] flex items-center gap-1.5 uppercase tracking-wider text-[10px]">
-                    <Sparkles className="w-3.5 h-3.5 text-[#1C1C1C]" />
-                    AI 心灵伴侣实时点评预判
-                  </span>
-                  <button
-                    type="button"
-                    disabled={isGeneratingAi || !entryContent.trim()}
-                    onClick={handleGenerateModalAiReflection}
-                    className="px-3 py-1 bg-[#3B6E58] hover:bg-[#2E5846] text-white text-[10px] uppercase tracking-wider font-bold transition-colors disabled:opacity-50 flex items-center gap-1 shadow-xs"
-                  >
-                    {isGeneratingAi && <Loader2 className="w-3 h-3 animate-spin" />}
-                    <span>预览 AI 点评</span>
-                  </button>
-                </div>
-                {aiReflectionText && (
-                  <p className="text-xs text-[#1C1C1C] font-serif-title italic border-t border-[#1C1C1C]/10 pt-2">
-                    “{aiReflectionText}”
-                  </p>
-                )}
-              </div>
-
               <div className="flex justify-end gap-3 pt-4 border-t border-[#1C1C1C]/10">
                 <button
                   type="button"
@@ -624,7 +583,7 @@ export const DiaryView: React.FC<DiaryViewProps> = ({
                   type="submit"
                   className="px-6 py-2 bg-[#3B6E58] hover:bg-[#2E5846] text-white text-[10px] uppercase tracking-[0.2em] font-bold transition-all shadow-xs"
                 >
-                  发布日记
+                  {editingDiaryId ? '保存修改' : '发布日记'}
                 </button>
               </div>
             </form>

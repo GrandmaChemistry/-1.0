@@ -78,10 +78,16 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
   const fetchAiInsight = async () => {
     setIsLoadingInsight(true);
-    const nextSeed = refreshCount + 1;
-    setRefreshCount(nextSeed);
+    const randomSeed = Math.floor(Math.random() * 10000);
+    setRefreshCount((prev) => prev + 1);
 
     const fallbacks = INSIGHTS_LIST;
+    const getRandomFallback = () => {
+      if (fallbacks.length === 0) return insight;
+      const filtered = fallbacks.filter((item) => item.quote !== insight.quote);
+      const list = filtered.length > 0 ? filtered : fallbacks;
+      return list[Math.floor(Math.random() * list.length)];
+    };
 
     try {
       const res = await AiApiService.getDailyInsight(
@@ -89,17 +95,16 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         todayCompletedTasksCount,
         todaySpent,
         latestMood,
-        nextSeed
+        randomSeed
       );
-      // Ensure quote updates even if duplicate returned
       if (!res || res.quote === insight.quote) {
-        setInsight(fallbacks[nextSeed % fallbacks.length]);
+        setInsight(getRandomFallback());
       } else {
         setInsight(res);
       }
     } catch (e) {
       console.error(e);
-      setInsight(fallbacks[nextSeed % fallbacks.length]);
+      setInsight(getRandomFallback());
     } finally {
       setIsLoadingInsight(false);
     }
@@ -139,30 +144,16 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
           <div className="lg:col-span-7 space-y-3">
             <div className="text-[10px] uppercase tracking-[0.25em] font-bold text-[#8C8476]">
-              {/* Mobile View (stacked in 2 lines) */}
-              <div className="sm:hidden flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <CalendarDays className="w-3.5 h-3.5 text-[#1C1C1C]" />
-                  <span>{dateFormatted}</span>
-                </div>
-                <div className="flex items-center gap-2 text-[#1C1C1C] text-[11px] font-bold">
-                  <span>{dayOfWeek}</span>
-                  <span className="text-[#8C8476]">•</span>
-                  <Sun className="w-3.5 h-3.5 text-[#1C1C1C]" />
-                  <span className="text-[#8C8476]">晴朗 26°C</span>
-                </div>
-              </div>
-
-              {/* Tablet & Desktop View (all in 1 single line) */}
-              <div className="hidden sm:flex items-center gap-2.5 text-[11px]">
-                <div className="flex items-center gap-1.5">
+              {/* Single line date, day of week, and weather on both mobile & desktop */}
+              <div className="flex items-center gap-2 text-[11px] whitespace-nowrap overflow-x-auto pb-0.5 sm:pb-0">
+                <div className="flex items-center gap-1.5 shrink-0">
                   <CalendarDays className="w-3.5 h-3.5 text-[#1C1C1C]" />
                   <span className="text-[#8C8476]">{dateFormatted}</span>
                 </div>
                 <span className="text-[#8C8476]">•</span>
-                <span className="text-[#1C1C1C] font-bold">{dayOfWeek}</span>
+                <span className="text-[#1C1C1C] font-bold shrink-0">{dayOfWeek}</span>
                 <span className="text-[#8C8476]">•</span>
-                <div className="flex items-center gap-1 text-[#8C8476]">
+                <div className="flex items-center gap-1 text-[#8C8476] shrink-0">
                   <Sun className="w-3.5 h-3.5 text-[#1C1C1C]" />
                   <span>晴朗 26°C</span>
                 </div>
@@ -345,140 +336,6 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           <p className="text-xs text-[#4A4540] line-clamp-2 leading-relaxed font-light">
             最近手记：{diary[0]?.title ? `《${diary[0].title}》 — ${diary[0].content}` : '今天还没有写日记，记录当下的心境。'}
           </p>
-        </div>
-      </div>
-
-      {/* Main Grid: Pending Tasks vs Journal Preview */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left 7 cols: Pending Tasks Editorial List */}
-        <div className="lg:col-span-7 bg-[#FDFCFB] border border-[#1C1C1C]/10 p-8 space-y-6">
-          <div className="flex items-center justify-between border-b border-[#1C1C1C]/10 pb-4">
-            <h3 className="text-xs uppercase tracking-[0.3em] font-bold text-[#1C1C1C] flex items-center gap-3">
-              <span className="w-4 h-[1px] bg-[#1C1C1C]"></span>
-              Priority Action Items
-            </h3>
-            <button
-              onClick={() => setActiveTab('todo')}
-              className="text-xs text-[#8C8476] hover:text-[#1C1C1C] underline font-medium"
-            >
-              待办清单 →
-            </button>
-          </div>
-
-          {pendingTasks.length === 0 ? (
-            <div className="py-12 text-center text-[#8C8476] text-xs font-light">
-              所有待办任务均已圆满完成，享受惬意的余暇。
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {pendingTasks.slice(0, 5).map((task) => (
-                <div
-                  key={task.id}
-                  className="flex items-start justify-between pb-4 border-b border-[#1C1C1C]/5 last:border-0 group"
-                >
-                  <div className="flex items-start gap-4">
-                    <button
-                      onClick={() => onToggleTask(task.id)}
-                      className="mt-0.5 w-4 h-4 border border-[#1C1C1C] flex items-center justify-center shrink-0 hover:bg-[#1C1C1C] transition-colors"
-                    >
-                      {task.status === 'completed' && <div className="w-2 h-2 bg-[#1C1C1C]" />}
-                    </button>
-                    <div>
-                      <p className="text-sm font-medium text-[#1C1C1C] group-hover:underline">
-                        {task.title}
-                      </p>
-                      {task.description && (
-                        <p className="text-xs text-[#8C8476] mt-1 line-clamp-1 font-light">
-                          {task.description}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 shrink-0 text-xs">
-                    <span className="text-[10px] uppercase tracking-wider font-semibold text-[#8C8476] bg-[#F2F0EB] px-2 py-0.5 border border-[#1C1C1C]/10">
-                      {task.category || 'Personal'}
-                    </span>
-                    {task.dueDate && (
-                      <span className="text-[#8C8476] text-[11px] font-mono">{task.dueDate}</span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Right 5 cols: Journal & Ledger Feed */}
-        <div className="lg:col-span-5 space-y-6">
-          {/* Latest Journal Entry */}
-          <div className="bg-[#FDFCFB] border border-[#1C1C1C]/10 p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-[#1C1C1C]/10 pb-3">
-              <h3 className="text-xs uppercase tracking-[0.3em] font-bold text-[#1C1C1C] flex items-center gap-2">
-                <span className="w-3 h-[1px] bg-[#1C1C1C]"></span>
-                Journal Feature
-              </h3>
-              <button
-                onClick={() => setActiveTab('diary')}
-                className="text-xs text-[#8C8476] hover:text-[#1C1C1C]"
-              >
-                日记馆 →
-              </button>
-            </div>
-
-            {diary.length > 0 ? (
-              <article className="space-y-3">
-                <p className="text-[10px] uppercase tracking-widest text-[#8C8476] font-semibold">
-                  {diary[0].date}
-                </p>
-                <h4 className="text-lg font-serif-title italic font-bold text-[#1C1C1C]">{diary[0].title}</h4>
-                <p className="text-xs text-[#4A4540] line-clamp-4 leading-relaxed font-light">
-                  {diary[0].content}
-                </p>
-                {diary[0].aiReflection && (
-                  <div className="pt-3 border-t border-[#1C1C1C]/10">
-                    <p className="text-[10px] uppercase tracking-wider text-[#8C8476] font-bold mb-1">AI Reflection</p>
-                    <p className="text-xs text-[#1C1C1C] italic font-serif-title">“{diary[0].aiReflection}”</p>
-                  </div>
-                )}
-              </article>
-            ) : (
-              <p className="text-xs text-[#8C8476] py-6 text-center">暂无日记手记</p>
-            )}
-          </div>
-
-          {/* Today Expense Feed */}
-          <div className="bg-[#FDFCFB] border border-[#1C1C1C]/10 p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-[#1C1C1C]/10 pb-3">
-              <h3 className="text-xs uppercase tracking-[0.3em] font-bold text-[#1C1C1C] flex items-center gap-2">
-                <span className="w-3 h-[1px] bg-[#1C1C1C]"></span>
-                Recent Transactions
-              </h3>
-              <button
-                onClick={() => setActiveTab('finance')}
-                className="text-xs text-[#8C8476] hover:text-[#1C1C1C]"
-              >
-                明细 →
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              {transactions.slice(0, 3).map((tx) => (
-                <div
-                  key={tx.id}
-                  className="flex items-center justify-between border-b border-[#1C1C1C]/5 pb-2 last:border-0"
-                >
-                  <div>
-                    <p className="text-xs font-bold text-[#1C1C1C] uppercase tracking-tight">{tx.description}</p>
-                    <p className="text-[10px] font-serif-title italic text-[#8C8476]">{tx.category} • {tx.paymentMethod}</p>
-                  </div>
-                  <span className="font-mono text-xs font-semibold text-[#1C1C1C]">
-                    {tx.type === 'expense' ? '-' : '+'}¥{tx.amount.toFixed(2)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </div>

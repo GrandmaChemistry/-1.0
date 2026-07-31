@@ -8,6 +8,7 @@ import {
   Tag,
   Search,
   CheckSquare,
+  Pencil,
 } from 'lucide-react';
 
 interface TodoViewProps {
@@ -30,6 +31,7 @@ export const TodoView: React.FC<TodoViewProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   // Add/Edit Task Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [taskTitle, setTaskTitle] = useState('');
   const [taskDesc, setTaskDesc] = useState('');
   const [taskCategory, setTaskCategory] = useState('生活');
@@ -53,7 +55,29 @@ export const TodoView: React.FC<TodoViewProps> = ({
     return matchesCategory && matchesStatus && matchesSearch;
   });
 
-  const handleCreateTask = (e: React.FormEvent) => {
+  const handleOpenCreateTask = () => {
+    setEditingTaskId(null);
+    setTaskTitle('');
+    setTaskDesc('');
+    setTaskCategory('生活');
+    setTaskPriority('medium');
+    setTaskDueDate(new Date().toISOString().split('T')[0]);
+    setTaskTagsStr('');
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEditTask = (task: Task) => {
+    setEditingTaskId(task.id);
+    setTaskTitle(task.title);
+    setTaskDesc(task.description || '');
+    setTaskCategory(task.category);
+    setTaskPriority(task.priority);
+    setTaskDueDate(task.dueDate || new Date().toISOString().split('T')[0]);
+    setTaskTagsStr(task.tags ? task.tags.join(', ') : '');
+    setIsModalOpen(true);
+  };
+
+  const handleSaveTask = (e: React.FormEvent) => {
     e.preventDefault();
     if (!taskTitle.trim()) return;
     const tags = taskTagsStr
@@ -61,17 +85,33 @@ export const TodoView: React.FC<TodoViewProps> = ({
       .map((t) => t.trim())
       .filter(Boolean);
 
-    onAddTask({
-      title: taskTitle.trim(),
-      description: taskDesc.trim(),
-      category: taskCategory,
-      priority: taskPriority,
-      dueDate: taskDueDate,
-      status: 'pending',
-      tags,
-      subtasks: [],
-    });
+    if (editingTaskId) {
+      const existing = tasks.find((t) => t.id === editingTaskId);
+      if (existing) {
+        onUpdateTask({
+          ...existing,
+          title: taskTitle.trim(),
+          description: taskDesc.trim(),
+          category: taskCategory,
+          priority: taskPriority,
+          dueDate: taskDueDate,
+          tags,
+        });
+      }
+    } else {
+      onAddTask({
+        title: taskTitle.trim(),
+        description: taskDesc.trim(),
+        category: taskCategory,
+        priority: taskPriority,
+        dueDate: taskDueDate,
+        status: 'pending',
+        tags,
+        subtasks: [],
+      });
+    }
 
+    setEditingTaskId(null);
     setTaskTitle('');
     setTaskDesc('');
     setTaskTagsStr('');
@@ -95,7 +135,7 @@ export const TodoView: React.FC<TodoViewProps> = ({
           </p>
           <div className="pt-2 flex flex-wrap items-center gap-2">
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={handleOpenCreateTask}
               className="flex items-center gap-2 px-5 py-2.5 bg-[#3B6E58] hover:bg-[#2E5846] text-white text-[10px] uppercase tracking-[0.2em] font-bold transition-colors shadow-xs"
             >
               <Plus className="w-4 h-4 text-amber-200" />
@@ -265,9 +305,16 @@ export const TodoView: React.FC<TodoViewProps> = ({
                   {/* Actions Right */}
                   <div className="flex items-center gap-2 shrink-0">
                     <button
+                      onClick={() => handleOpenEditTask(task)}
+                      title="编辑任务"
+                      className="p-1.5 text-[#8C8476] hover:text-[#3B6E58] transition-colors"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                    <button
                       onClick={() => onDeleteTask(task.id)}
                       title="删除任务"
-                      className="p-1.5 text-[#8C8476] hover:text-[#1C1C1C] transition-colors"
+                      className="p-1.5 text-[#8C8476] hover:text-rose-600 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -284,10 +331,12 @@ export const TodoView: React.FC<TodoViewProps> = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
           <div className="bg-[#FAF9F6] border border-[#1C1C1C] w-full max-w-lg p-6 sm:p-8 shadow-2xl text-[#1C1C1C]">
             <div className="border-b border-[#1C1C1C]/10 pb-3 mb-6">
-              <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-[#8C8476]">New Entry</span>
-              <h3 className="text-xl font-serif-title italic font-bold">新建待办事项</h3>
+              <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-[#8C8476]">Task Ledger</span>
+              <h3 className="text-xl font-serif-title italic font-bold">
+                {editingTaskId ? '编辑待办事项' : '新建待办事项'}
+              </h3>
             </div>
-            <form onSubmit={handleCreateTask} className="space-y-4">
+            <form onSubmit={handleSaveTask} className="space-y-4">
               <div>
                 <label className="block text-[10px] uppercase tracking-wider font-bold text-[#8C8476] mb-1">任务名称 *</label>
                 <input
@@ -374,7 +423,7 @@ export const TodoView: React.FC<TodoViewProps> = ({
                   type="submit"
                   className="px-6 py-2 bg-[#3B6E58] hover:bg-[#2E5846] text-white text-[10px] uppercase tracking-[0.2em] font-bold transition-all shadow-xs"
                 >
-                  确定创建
+                  {editingTaskId ? '保存修改' : '确定创建'}
                 </button>
               </div>
             </form>

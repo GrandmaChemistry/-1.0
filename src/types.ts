@@ -70,7 +70,7 @@ export interface Habit {
 export interface Wish {
   id: string;
   title: string;
-  category: '旅行' | '学习' | '体验' | '心愿物' | '其他';
+  category: '旅行' | '学习' | '体验' | '心愿' | '心愿物' | '其他';
   status: 'planning' | 'achieved';
   targetDate?: string;
   achievedDate?: string;

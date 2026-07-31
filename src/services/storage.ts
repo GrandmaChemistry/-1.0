@@ -270,7 +270,7 @@ const INITIAL_WISHES: Wish[] = [
   {
     id: 'wish-3',
     title: '布置专属静心书桌角落',
-    category: '心愿物',
+    category: '心愿',
     status: 'achieved',
     achievedDate: getFormattedDate(-5),
     note: '购买了温润实木书桌与柔光护眼台灯，配上绿植后非常有氛围感。',

@@ -5,6 +5,7 @@ import financeBanner from '../assets/images/cozy_finance_banner_1785232800853.jp
 import todoBanner from '../assets/images/todo_cozy_banner_1785233183672.jpg';
 import analyticsBanner from '../assets/images/analytics_cozy_banner_1785233196490.jpg';
 import appLogo from '../assets/images/app_logo_fresh_1785236583881.jpg';
+import lifehubBanner from '../assets/images/lifehub_cozy_banner_1785471637376.jpg';
 
 export const APP_IMAGES = {
   heroBanner,
@@ -14,4 +15,5 @@ export const APP_IMAGES = {
   todoBanner,
   analyticsBanner,
   appLogo,
+  lifehubBanner,
 };

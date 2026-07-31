@@ -311,10 +311,9 @@ export const DiaryView: React.FC<DiaryViewProps> = ({
                       <span>{entry.date}</span>
                     </div>
 
-                    <div className="flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-medium bg-[#F2F0EB] border border-[#1C1C1C]/10 text-[#1C1C1C]">
+                    <span className="px-2 py-0.5 text-xs font-medium bg-[#F2F0EB] border border-[#1C1C1C]/10 text-[#1C1C1C]" title={`天气: ${getWeatherLabel(entry.weather)}`}>
                       {getWeatherIcon(entry.weather)}
-                      <span>{getWeatherLabel(entry.weather)}</span>
-                    </div>
+                    </span>
 
                     <span className="px-2 py-0.5 text-xs font-medium bg-[#FAF9F6] border border-[#1C1C1C]/10 text-[#1C1C1C]" title={`心情: ${entry.mood}`}>
                       {getMoodEmoji(entry.mood)}

@@ -175,27 +175,33 @@ export const LifeHubView: React.FC<LifeHubViewProps> = ({
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
       {/* Header Banner */}
-      <div className="relative bg-[#FAF9F6] border border-[#1C1C1C]/10 p-6 md:p-8 overflow-hidden shadow-xs">
-        <div className="absolute right-0 top-0 bottom-0 w-1/3 opacity-15 pointer-events-none hidden sm:block">
-          <img
-            src={APP_IMAGES.analyticsBanner}
-            alt="生活灵感"
-            className="w-full h-full object-cover grayscale"
-            referrerPolicy="no-referrer"
-          />
-        </div>
-        <div className="relative z-10 max-w-2xl space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#1C1C1C] text-[#FAF9F6] text-[10px] uppercase tracking-[0.2em] font-medium">
-            <Sparkles className="w-3 h-3 text-amber-300" />
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-[#FAF9F6] border border-[#1C1C1C]/10 p-5 sm:p-8 shadow-xs">
+        <div className="space-y-2 max-w-xl">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#F2F0EB] border border-[#1C1C1C]/10 text-[#3B6E58] text-[10px] uppercase tracking-[0.2em] font-semibold">
+            <Sparkles className="w-3 h-3 text-[#3B6E58]" />
             <span>Habits, Wishes & Moments</span>
           </div>
-          <h2 className="text-xl md:text-2xl font-serif text-[#1C1C1C] font-bold tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-serif-title italic font-bold text-[#1C1C1C]">
             生活灵感与时光打卡
           </h2>
           <p className="text-xs text-[#4A4540] font-light leading-relaxed">
             培养微小的微习惯、收集人生愿望图景、随时抽取昔日时光胶囊与闪念高光。
           </p>
         </div>
+
+        {/* Cozy Illustration Card */}
+        <div className="relative group overflow-hidden border border-[#1C1C1C]/15 bg-[#FAF9F6] p-1.5 shadow-sm shrink-0 w-full md:w-60">
+          <img
+            src={APP_IMAGES.lifehubBanner}
+            alt="生活灵感与时光打卡"
+            referrerPolicy="no-referrer"
+            className="w-full h-32 object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          <div className="p-2 text-center bg-[#FAF9F6] border-t border-[#1C1C1C]/10">
+            <p className="text-[11px] font-serif-title italic text-[#1C1C1C]">🌿 收集生活里的微光</p>
+          </div>
+        </div>
+      </div>
 
         {/* SubTab Navigation */}
         <div className="flex flex-wrap gap-2 pt-6 border-t border-[#1C1C1C]/10 mt-6">
@@ -235,7 +241,6 @@ export const LifeHubView: React.FC<LifeHubViewProps> = ({
             <span>时光胶囊 & 灵感口袋</span>
           </button>
         </div>
-      </div>
 
       {/* SECTION 1: HABITS */}
       {activeSubTab === 'habits' && (
@@ -430,7 +435,7 @@ export const LifeHubView: React.FC<LifeHubViewProps> = ({
 
           {/* Filter Pills */}
           <div className="flex flex-wrap gap-1.5">
-            {['全部', '旅行', '学习', '体验', '心愿物', '其他'].map((cat) => (
+            {['全部', '旅行', '学习', '体验', '心愿', '其他'].map((cat) => (
               <button
                 key={cat}
                 onClick={() => setWishCategoryFilter(cat)}
@@ -474,7 +479,7 @@ export const LifeHubView: React.FC<LifeHubViewProps> = ({
                     <option value="旅行">旅行</option>
                     <option value="学习">学习</option>
                     <option value="体验">体验</option>
-                    <option value="心愿物">心愿物</option>
+                    <option value="心愿">心愿</option>
                     <option value="其他">其他</option>
                   </select>
                 </div>
@@ -601,16 +606,19 @@ export const LifeHubView: React.FC<LifeHubViewProps> = ({
           {/* Time Capsule Random Memory Draw */}
           <div className="bg-[#FAF9F6] border border-[#1C1C1C]/15 p-6 md:p-8 space-y-4 shadow-xs">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-emerald-600" />
-                <h3 className="text-base font-serif font-bold text-[#1C1C1C]">时光胶囊 · 随机回忆抽屉</h3>
+              <div className="flex items-start gap-2.5">
+                <Sparkles className="w-5 h-5 text-emerald-600 mt-0.5 shrink-0" />
+                <div className="space-y-0.5">
+                  <h3 className="text-base font-serif font-bold text-[#1C1C1C]">时光胶囊</h3>
+                  <p className="text-xs text-[#8C8476] font-light">随机回忆抽屉</p>
+                </div>
               </div>
               <button
                 onClick={drawCapsule}
                 className="flex items-center gap-1.5 px-3.5 py-2 bg-[#3B6E58] hover:bg-[#2E5846] text-white text-xs font-medium transition-colors shadow-xs"
               >
                 <Shuffle className="w-3.5 h-3.5 text-emerald-300" />
-                <span>开启下一粒胶囊</span>
+                <span>开启下一粒</span>
               </button>
             </div>
 
